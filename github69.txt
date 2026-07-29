@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>THREADHAUS Store</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Outfit&display=swap" rel="stylesheet" />
+<style>
+  /* Reset & Base Styles */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #0D0D0D;
+    color: #fff;
+    line-height: 1.5;
+  }
+
+  /* Header Styling */
+.header {
+  position: fixed;
+  top:0; left:0;
+  width:100%;
+  background:#0D0D0D;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 20px;
+  z-index:999;
+  border-bottom:1px solid #222;
+}
+.header h1 {
+  font-family: 'Anton', sans-serif;
+  font-size:24px;
+  color:#E8FF00;
+}
+.cart {
+  position: relative;
+  cursor:pointer;
+}
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background:#E8FF00;
+  color:#000;
+  border-radius:50%;
+  width:20px;
+  height:20px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:bold;
+  font-size:12px;
+}
+
+/* Main Content */
+.main {
+  padding-top:80px;
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+}
+
+/* Hero, Stats, About, Footer */
+.hero, .stats, .about, footer {
+  margin-bottom:40px;
+}
+.hero {
+  text-align:center;
+}
+.hero h2 {
+  font-family: 'Anton', sans-serif;
+  font-size:36px;
+  margin-bottom:10px;
+}
+.hero p {
+  font-size:18px;
+}
+.stats {
+  display:flex;
+  justify-content:space-around;
+}
+.stat {
+  background:#222;
+  padding:10px 20px;
+  border-radius:8px;
+  text-align:center;
+}
+.about {
+  max-width:800px;
+  margin:auto;
+  text-align:center;
+}
+footer {
+  background:#222;
+  padding:20px;
+  text-align:center;
+  font-size:14px;
+  color:#aaa;
+}
+
+/* Products Grid */
+.products {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap:20px;
+}
+.product-card {
+  background:#1a1a1a;
+  border-radius:8px;
+  overflow:hidden;
+  padding:10px;
+  transition: transform 0.3s;
+  cursor:pointer;
+}
+.product-card:hover {
+  transform: translateY(-5px);
+}
+.product-image {
+  width:100%;
+  height:200px;
+  object-fit:cover;
+  border-radius:4px;
+}
+.tags {
+  margin-top:8px;
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.tag {
+  background:#E8FF00;
+  color:#000;
+  padding:2px 6px;
+  border-radius:4px;
+  font-size:12px;
+  font-weight:bold;
+}
+.colors {
+  margin-top:8px;
+  display:flex;
+  gap:4px;
+}
+.color-swatch {
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  border:1px solid #444;
+  cursor:pointer;
+}
+
+/* Buttons */
+button {
+  background:#E8FF00;
+  color:#000;
+  border:none;
+  padding:8px 12px;
+  border-radius:4px;
+  cursor:pointer;
+  margin-top:8px;
+  font-weight:bold;
+  transition:background 0.3s;
+}
+button:hover {
+  background:#c7e600;
+}
+
+/* Modal Styles */
+.modal {
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.7);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+.modal-content {
+  background:#222;
+  padding:20px;
+  border-radius:8px;
+  max-width:400px;
+  width:90%;
+  position:relative;
+}
+.close-btn {
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:none;
+  border:none;
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+}
+
+#cart-sidebar {
+  position:fixed;
+  top:0; right:0;
+  width:300px;
+  height:100%;
+  background:#222;
+  padding:20px;
+  transform:translateX(100%);
+  transition: transform 0.3s;
+  z-index:9999;
+  overflow-y:auto;
+}
+#cart-sidebar.show {
+  transform:translateX(0);
+}
+#cart-sidebar h3 {
+  margin-bottom:20px;
+}
+.cart-item {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+.item-info {
+  flex:1;
+  margin-left:10px;
+}
+.quantity-controls {
+  display:flex;
+  align-items:center;
+}
+.quantity-controls button {
+  padding:4px 8px;
+  margin:0 4px;
+}
+.checkout-form {
+  margin-top:20px;
+}
+.checkout-form input {
+  width:100%;
+  padding:8px;
+  margin-bottom:10px;
+  border-radius:4px;
+  border:none;
+}
+.checkout-btn {
+  width:100%;
+  padding:10px;
+  background:#E8FF00;
+  color:#000;
+  border:none;
+  border-radius:4px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:background 0.3s;
+}
+.checkout-btn:hover {
+  background:#c7e600;
+}
+
+/* Admin Panel */
+#admin-panel {
+  position:fixed;
+  top:60px;
+  right:20px;
+  background:#111;
+  padding:20px;
+  border-radius:8px;
+  z-index:9999;
+  max-width:300px;
+  display:none;
+  flex-direction:column;
+}
+#admin-panel.show {
+  display:flex;
+}
+#admin-products {
+  display:flex;
+  flex-direction:column;
+}
+#admin-products input {
+  margin-bottom:10px;
+  padding:8px;
+  border-radius:4px;
+  border:none;
+}
+#applyPrices {
+  padding:8px;
+  background:#E8FF00;
+  color:#000;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  font-weight:bold;
+  margin-top:10px;
+}
+#admin-toggle {
+  background:none;
+  border:none;
+  color:#E8FF00;
+  font-family:'Anton', sans-serif;
+  font-size:16px;
+  cursor:pointer;
+  margin-left:10px;
+}
+
+/* Utility classes */
+.hidden {
+  display:none;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>THREADHAUS</h1>
+  <div class="cart" id="cartIcon">
+    🛒 <div class="cart-badge" id="cartCount">0</div>
+  </div>
+  <button id="adminToggle">Admin</button>
+</div>
+
+<!-- Admin Panel -->
+<div id="admin-panel">
+  <h3>Edit Prices</h3>
+  <div id="admin-products"></div>
+  <button id="applyPrices">Apply Prices</button>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h2>Streetwear Energy</h2>
+    <p>Bold styles for the street. Shop the latest now.</p>
+  </section>
+
+  <!-- Stats Bar -->
+  <section class="stats">
+    <div class="stat">
+      <h3>100+</h3>
+      <p>Products</p>
+    </div>
+    <div class="stat">
+      <h3>50K+</h3>
+      <p>Customers</p>
+    </div>
+    <div class="stat">
+      <h3>10+</h3>
+      <p>Years</p>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about">
+    <h3>About THREADHAUS</h3>
+    <p>We bring streetwear energy to your wardrobe with bold designs and limited editions.</p>
+  </section>
+
+  <!-- Product Grid -->
+  <section class="products" id="productGrid">
+    <!-- Products will be injected here by JS -->
+  </section>
+
+</div>
+
+<!-- Cart Sidebar -->
+<div id="cart-sidebar">
+  <h3>Shopping Cart</h3>
+  <div id="cartItems"></div>
+  <h4>Total: <span id="cartTotal">₨0.00</span></h4>
+  <button class="checkout-btn" id="checkoutBtn">Checkout</button>
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal hidden" id="checkoutModal">
+  <div class="modal-content">
+    <button class="close-btn" id="closeCheckout">&times;</button>
+    <h3>Checkout</h3>
+    <form id="checkoutForm" class="checkout-form">
+      <input type="text" placeholder="Name" required />
+      <input type="email" placeholder="Email" required />
+      <input type="text" placeholder="Address" required />
+      <input type="text" placeholder="Card Number" required />
+      <button type="submit" class="checkout-btn">Place Order</button>
+    </form>
+  </div>
+</div>
+
+<!-- Order Confirmation -->
+<div class="modal hidden" id="confirmationModal">
+  <div class="modal-content">
+    <h3>Thank you for your order!</h3>
+    <button class="close-btn" id="closeConfirmation">Close</button>
+  </div>
+</div>
+
+<script>
+  // Conversion settings: 1 USD = 280 PKR
+  const currencySymbol = '₨';
+  const conversionRate = 280;
+
+  // Sample Products Data with shirt images
+  const productsData = [
+    {
+      id:1,
+      name: "Street Hoodie",
+      price: 50, // in USD
+      image: "https://images.unsplash.com/photo-1604757767474-0a8b3e0f0a88?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
+      tags: ["Bestseller"],
+      colors: ["#000000","#FFFFFF","#FF0000"]
+    },
+    {
+      id:2,
+      name: "Cargo Pants",
+      price: 70,
+      image: "https://images.unsplash.com/photo-1613625586814-7b7f4f4d7f4f?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
+      tags: ["New"],
+      colors: ["#555555","#222222"]
+    },
+    {
+      id:3,
+      name: "Sneaker",
+      price: 90,
+      image: "https://images.unsplash.com/photo-1628974421138-1b2a3f4e5f6g?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
+      tags: ["Limited"],
+      colors: ["#FFA500","#000"]
+    },
+    {
+      id:4,
+      name: "Beanie",
+      price: 25,
+      image: "https://images.unsplash.com/photo-1607615140174-8b7f7f7f7f7f?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
+      tags: [],
+      colors: ["#333","#111"]
+    },
+    {
+      id:5,
+      name: "Varsity Jacket",
+      price: 120,
+      image: "https://images.unsplash.com/photo-1611063858802-2f7f4f4d7f4f?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
+      tags: ["Bestseller"],
+      colors: ["#000","#FFFFFF"]
+    },
+    {
+      id:6,
+      name: "Joggers",
+      price: 60,
+      image: "https://images.unsplash.com/photo-1613478594810-1c2a3f4e5f6g?ixlib=rb-4.0.1&auto=format&fit=crop&w=800&q=80",
+      tags: ["New"],
+      colors: ["#222","#444"]
+    }
+  ];
+
+  let cart = {}; // cart object to hold items
+  let productPrices = {}; // store current product prices in PKR
+  let selectedProduct = null;
+
+  // DOM Elements
+  const productGrid = document.getElementById('productGrid');
+  const cartCountEl = document.getElementById('cartCount');
+  const cartSidebar = document.getElementById('cart-sidebar');
+  const cartItemsEl = document.getElementById('cartItems');
+  const cartTotalEl = document.getElementById('cartTotal');
+
+  const adminPanel = document.getElementById('admin-panel');
+  const adminToggle = document.getElementById('adminToggle');
+  const adminProductsContainer = document.getElementById('admin-products');
+  const applyPricesBtn = document.getElementById('applyPrices');
+
+  const checkoutModal = document.getElementById('checkoutModal');
+  const closeCheckoutBtn = document.getElementById('closeCheckout');
+  const checkoutForm = document.getElementById('checkoutForm');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+
+  const confirmationModal = document.getElementById('confirmationModal');
+  const closeConfirmationBtn = document.getElementById('closeConfirmation');
+
+  // Initialize the page
+  function init() {
+    renderProducts();
+    populateAdminPrices();
+    // Event Listeners
+    document.getElementById('cartIcon').addEventListener('click', toggleCart);
+    document.getElementById('adminToggle').addEventListener('click', toggleAdminPanel);
+    applyPricesBtn.addEventListener('click', applyAdminPrices);
+    document.getElementById('closeCheckout').addEventListener('click', () => toggleModal(checkoutModal, false));
+    document.getElementById('closeConfirmation').addEventListener('click', () => toggleModal(confirmationModal, false));
+    checkoutForm.addEventListener('submit', handleCheckout);
+    document.getElementById('cart-sidebar').addEventListener('click', handleCartControls);
+    checkoutBtn.addEventListener('click', () => toggleModal(checkoutModal, true));
+  }
+
+  // Render product cards
+  function renderProducts() {
+    productsData.forEach(product => {
+      productPrices[product.id] = product.price * conversionRate; // convert to PKR
+      const card = document.createElement('div');
+      card.className='product-card';
+      card.dataset.id=product.id;
+      card.innerHTML= `
+        <img src="${product.image}" class="product-image" />
+        <h4 style="margin-top:8px;">${product.name}</h4>
+        <div class="tags">${product.tags.map(t => `<div class="tag">${t}</div>`).join('')}</div>
+        <div class="colors">
+          ${product.colors.map(c => `<div class="color-swatch" style="background:${c};"></div>`).join('')}
+        </div>
+        <div style="margin-top:8px;">${currencySymbol}${(product.price * conversionRate).toFixed(2)}</div>
+        <button class="quick-add" style="margin-top:8px;">Quick Add</button>
+      `;
+      // Clicking the product card opens size modal
+      card.addEventListener('click', () => openSizeModal(product.id));
+      // Quick Add button
+      card.querySelector('.quick-add').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openSizeModal(product.id);
+      });
+      productGrid.appendChild(card);
+    });
+  }
+
+  // Populate admin price inputs
+  function populateAdminPrices() {
+    adminProductsContainer.innerHTML='';
+    productsData.forEach(p => {
+      const input = document.createElement('input');
+      input.type='number';
+      input.value= (p.price * conversionRate).toFixed(2);
+      input.dataset.id=p.id;
+      input.placeholder=p.name;
+      adminProductsContainer.appendChild(input);
+    });
+  }
+
+  // Open size selection modal
+  function openSizeModal(productId) {
+    selectedProduct = productsData.find(p => p.id===productId);
+    showSizeModal();
+  }
+
+  // Show size modal
+  function showSizeModal() {
+    const modal = document.createElement('div');
+    modal.className='modal';
+    modal.innerHTML= `
+      <div class="modal-content">
+        <button class="close-btn">&times;</button>
+        <h3>Select Size for ${selectedProduct.name}</h3>
+        <select id="sizeSelect">
+          <option value="">Select Size</option>
+          <option value="XS">XS</option>
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL</option>
+        </select>
+        <button id="addToCartBtn" style="margin-top:10px;">Add to Cart</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector('.close-btn').addEventListener('click', () => modal.remove());
+    document.getElementById('addToCartBtn').addEventListener('click', () => {
+      const size= document.getElementById('sizeSelect').value;
+      if(!size){
+        alert('Please select a size');
+        return;
+      }
+      addToCart(selectedProduct.id, size);
+      modal.remove();
+    });
+  }
+
+  // Add item to cart
+  function addToCart(productId, size='') {
+    const key= productId + '_' + size;
+    if(cart[key]){
+      cart[key].qty++;
+    } else {
+      cart[key]= {
+        productId,
+        size,
+        qty:1
+      };
+    }
+    updateCart();
+  }
+
+  // Update cart UI
+  function updateCart() {
+    // Badge count
+    let totalItems=0;
+    for(let key in cart) totalItems += cart[key].qty;
+    cartCountEl.textContent= totalItems;
+
+    // Items list
+    cartItemsEl.innerHTML='';
+    let totalPrice=0;
+    for(let key in cart){
+      const item= cart[key];
+      const product= productsData.find(p => p.id===item.productId);
+      const itemTotal= product.price * item.qty * conversionRate;
+      totalPrice += itemTotal;
+      const div= document.createElement('div');
+      div.className='cart-item';
+      div.innerHTML= `
+        <div>
+          <strong>${product.name}</strong> (${item.size})<br/>
+          ${currencySymbol}${(product.price * conversionRate).toFixed(2)} x ${item.qty} = ${currencySymbol}${itemTotal.toFixed(2)}
+        </div>
+        <div class="quantity-controls">
+          <button data-key="${key}" data-action="minus">−</button>
+          <button data-key="${key}" data-action="plus">+</button>
+        </div>
+      `;
+      cartItemsEl.appendChild(div);
+    }
+    cartTotalEl.textContent= `${currencySymbol}${totalPrice.toFixed(2)}`;
+  }
+
+  // Toggle cart sidebar
+  function toggleCart() {
+    cartSidebar.classList.toggle('show');
+  }
+
+  // Handle + / - buttons in cart
+  function handleCartControls(e) {
+    if(e.target.tagName==='BUTTON'){
+      const key= e.target.dataset.key;
+      const action= e.target.dataset.action;
+      if(cart[key]){
+        if(action==='plus'){
+          cart[key].qty++;
+        } else if(action==='minus'){
+          cart[key].qty--;
+          if(cart[key].qty<=0) delete cart[key];
+        }
+        updateCart();
+      }
+    }
+  }
+
+  // Toggle admin panel
+  function toggleAdminPanel() {
+    document.getElementById('admin-panel').classList.toggle('show');
+  }
+
+  // Apply admin prices
+  function applyAdminPrices() {
+    const inputs= document.querySelectorAll('#admin-products input');
+    inputs.forEach(input => {
+      const id= parseInt(input.dataset.id);
+      const newPrice= parseFloat(input.value);
+      if(!isNaN(newPrice)){
+        productPrices[id]= newPrice;
+      }
+    });
+    // Update product cards
+    document.querySelectorAll('.product-card').forEach(card => {
+      const id= parseInt(card.dataset.id);
+      const price= productPrices[id];
+      card.querySelector('div:nth-child(4)').textContent= `${currencySymbol}${price.toFixed(2)}`;
+    });
+    // Update totals
+    updateCart();
+  }
+
+  // Handle checkout process
+  function handleCheckout(e) {
+    e.preventDefault();
+    toggleModal(checkoutModal, false);
+    toggleModal(confirmationModal, true);
+    // Clear cart after order
+    cart= {};
+    updateCart();
+  }
+
+  // Show/hide modals
+  function toggleModal(modal, show) {
+    if(show) {
+      modal.classList.remove('hidden');
+    } else {
+      modal.classList.add('hidden');
+    }
+  }
+
+  // Initialize on page load
+  init();
+</script>
+
+</body>
+</html>
